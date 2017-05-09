@@ -5,9 +5,19 @@ namespace RealPage\JsonApi\Lumen;
 use Illuminate\Support\ServiceProvider as IlluminateServiceProvider;
 use RealPage\JsonApi\MediaTypeGuard;
 use RealPage\JsonApi\EncoderService;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 class ServiceProvider extends IlluminateServiceProvider
 {
+    public function boot()
+    {
+        Request::macro('wantsJsonApi', function () {
+            $acceptable = $this->getAcceptableContentTypes();
+            return isset($acceptable[0]) && Str::contains($acceptable[0], ['application/vnd.api+json']);
+        });
+    }
+
     public function register()
     {
         $this->app->configure('json-api');
